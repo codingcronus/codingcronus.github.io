@@ -1,0 +1,5 @@
+title: Coding Cronus Blog
+description: Coding Cronus Blog revolves around advanced topics such as integration testing with Docker Containers, Event Sourcing, CQRS etc.
+show_downloads: true
+google_analytics:
+theme: jekyll-theme-cayman
