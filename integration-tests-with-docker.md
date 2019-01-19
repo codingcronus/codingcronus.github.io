@@ -3,12 +3,11 @@ layout: default
 ---
 
 # Integration Testing using Docker Containers
-
 Integration- and E2E-tests can often be brittle when testing against external services and infrastructure such as e.g. a database.
 As a consultant giving advice to a multitude of different companies and organisations, I've seen the following scenario several times.
 
 ### Common Integration Test scenario
-
+**Shared database**
 In this common integration test scenario, multiple developers (or Continous Integration pipelines) are executing commands and queries against a shared database.
 This is fine up until the point were a command alters data (aka State) that another test relies on. The database is no longer synchronized with requirements and assertions of the given integration test.
 
@@ -17,13 +16,34 @@ This is fine up until the point were a command alters data (aka State) that anot
 In order to synchronzize the database, the data has to be truncated and re-inserted. This of course can be automated in the Test Fixture Tear Down, CI-process and whatnot. How ever since the database is shared, the script might be executed while others are querying the resource and hence the tests are very brittle.
 
 ### A better solution using Containers
+**Dedicated database**
 A  better solution is to have a dedicated database per developer. This requires quite some setup and is prone for subtle differences in each environment. Re-synchronizing the data in the Test Fixture Tear Down method would be trivial, but might also prove to be very time consuming depending on the amount of data.
 
+**Containerized database**
 An even better solution would be to use Containers. We could go for a scenario like the one below.
 
 ![After](https://codingcronus.github.io/posts/integration-tests-with-containers/after.png)
 
 Each container would use the same Docker Image with a dedicated database (MySQL, SQL Server, Oracle DB etc.) and the required integration test data baked into the image. This would allow us to respawn the database with its initial state in a matter of a few seconds.
+
+### The Solution
+The [FIRST](https://github.com/ghsukumar/SFDC_Best_Practices/wiki/F.I.R.S.T-Principles-of-Unit-Testing) acronym in automated testing consists of:
+*   **F**ast
+*   **I**ndependent
+*   **R**epeatable
+*   **S**elf-validating
+*   **T**imely
+
+You can follow this [link](https://github.com/ghsukumar/SFDC_Best_Practices/wiki/F.I.R.S.T-Principles-of-Unit-Testing) to read more about the details of FIRST. In essence integration tests often have a hard time being compliant with the **F** and the **R**. In other words, integration tests are usually slow and brittle, which in turn makes them non-repeatable.
+
+Hence our solution should strive for multiple success criteria.
+### Our success criteria:
+
+*   Our tests should be fast to evaluate
+*   Our database should always re-synchronize at startup
+*   Our service implementation (the SUT) should not have any Docker dependency
+*   Our Test Fixture should easily be able to integrate the Docker container usage
+*   Our Test Fixture should be able to use multiple and different Docker containers
 
 # Header 1
 
