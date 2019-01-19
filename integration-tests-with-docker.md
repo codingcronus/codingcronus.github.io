@@ -2,13 +2,17 @@
 layout: default
 ---
 
+# Integration Testing using Docker Containers
+
 Integration and E2E tests can often be brittle when testing against external services and infrastructure such as e.g. a database.
 
-As a consultant giving advice to a multitude of different companies and organisations, I've seen the following scenario many times:
+As a consultant giving advice to a multitude of different companies and organisations, I've seen the following scenario several times.
 
+### Common Integration Test scenario
 ![Before](https://codingcronus.github.io/posts/integration-tests-with-containers/before.png)
 
-A much better solution is to use Containers. We should go for a scenario like this:
+### A better solution using Containers
+A  better solution is to use Containers. We should go for a scenario like the one below.
 
 ![After](https://codingcronus.github.io/posts/integration-tests-with-containers/after.png)
 
