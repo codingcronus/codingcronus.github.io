@@ -3,6 +3,7 @@ layout: default
 ---
 
 # Integration Testing using Docker Containers
+<div style="text-align: right">January 19, 2019</div>
 TL;DR: The project source code can be found [here](https://github.com/codingcronus/example-integration-tests-with-docker)
 
 Integration- and E2E-tests can often be brittle when testing against external services and infrastructure such as e.g. a database.
