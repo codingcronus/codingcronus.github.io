@@ -51,7 +51,7 @@ Hence our solution should strive for multiple success criteria.
 *   Our Test Fixture should easily be able to integrate the Docker container usage
 *   Our Test Fixture should be able to use multiple and different Docker containers
 
-#### The Docker Image
+### The Docker Image
 
 While we could make a solution with any choice of database vendor, I will choose MySQL for this example. Switching with e.g. SQL Server is very easy and just a matter of choosing another Docker Image for the container. Microsoft has an official release for the SQL Server Docker Image [here](https://hub.docker.com/_/microsoft-mssql-server).
 
@@ -106,7 +106,7 @@ docker build -t codingcronus/integrationtest-mysql .
 
 Now that our Docker Image has been built, we can continue our work in Visual Studio. For this example I have implemented the dependencies in .NET Core, but other versions is supported as well.
 
-#### The Test Fixture
+### The Test Fixture
 
 We start out by fleshing out the Test Fixture. You could end up with something like the one below.
 
@@ -181,7 +181,7 @@ The test should be pretty self explanatory, but you might have noticed that I am
 
 Maybe you have also noticed that we are instantiating the MySqlDockerServer class with the same connection string as for the MySQL BookRepository (the SUT = **S**ystem **U**nder **T**est). The MySqlDockerServer has not yet been defined, so we do that next.
 
-#### The Docker Service
+### The Docker Service
 
 The MySqlDockerServer selects a name for the Container (*CodingCronusIntegrationTestDb*), the image tag from the prevous step and the version (*latest*).
 The constructor also takes the connection string as input and uses it in the overridden *IsReady* method to determine when the database is available.
@@ -329,14 +329,14 @@ Once implemented we are ready to run our integration tests. All tests should pas
 
 ![Results](https://codingcronus.github.io/posts/integration-tests-with-containers/results.png)
 
-#### Conclusion
+### Conclusion
 
 Using Docker Containers can stabilize and overall improve integration testing quality to a level previously unheard of.
 The tests can easily be extended with several other Docker services simply by providing the Test Fixture with similar implementations as the *MySqlDockerServer* class.
 
 You can access the example project code in my repository [here](https://github.com/codingcronus/example-integration-tests-with-docker).
 
-#### About me
+### About me
 
 Cloud architect with many years of experience. Key areas includes: Scalable Cloud Architecture, Domain Driven Design, AI, Event Sourcing, CQRS, Automated Testing, Technical Due Diligence and many more.
 
