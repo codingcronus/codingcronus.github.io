@@ -2,13 +2,15 @@
 layout: default
 ---
 
-Text can be **bold**, _italic_, or ~~strikethrough~~.
+Integration and E2E tests can often be brittle when testing against external services and infrastructure such as e.g. a database.
 
-[Link to another page](./another-page.html).
+As a consultant giving advice to a multitude of different companies and organisations, I've seen the following scenario many times:
 
-There should be whitespace between paragraphs.
+![Before](https://codingcronus.github.io/posts/integration-tests-with-containers/before.png)
 
-There should be whitespace between paragraphs. We recommend including a README, or a file with information about your project.
+A much better solution is to use Containers. We should go for a scenario like this:
+
+![After](https://codingcronus.github.io/posts/integration-tests-with-containers/after.png)
 
 # Header 1
 
