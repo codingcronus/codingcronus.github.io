@@ -182,6 +182,9 @@ Maybe you have also noticed that we are instantiating the MySqlDockerServer clas
 
 #### The Docker Service
 
+The MySqlDockerServer selects a name for the Container (*CodingCronusIntegrationTestDb*), the image tag from the prevous step and the version (*latest*).
+The constructor also takes the connection string as input and uses it in the overridden *IsReady* method to determine when the database is available.
+
 **MySqlDockerServer.cs**
 
 ```csharp
@@ -216,9 +219,6 @@ public class MySqlDockerServer : DockerServer
     }
 }
 ```
-
-The MySqlDockerServer selects a name for the Container (*CodingCronusIntegrationTestDb*), the image tag from the prevous step and the version (*latest*).
-The constructor also takes the connection string as input and uses it in the overridden *IsReady* method to determine when the database is available.
 
 As you can see the class inherits from *DockerServer*. This is a slightly modified version of [Jeremy D. Miller](https://jeremydmiller.com)s implementation. It uses the [Docker.DotNet](https://www.nuget.org/packages/Docker.DotNet) nuget package.
 
@@ -324,89 +324,15 @@ public abstract class DockerServer
 }
 ```
 
+Once implemented we are ready to run our integration tests. All tests should pass like the ones below.
 
+![Results](https://codingcronus.github.io/posts/integration-tests-with-containers/results.png)
 
-#### Header 4
+#### Conclusion
 
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
+Using Docker Containers can stabilize and overall improve integration testing quality to a level previously unheard of.
+The tests can easily be extended with several other Docker services simply by providing the Test Fixture with similar implementations as the *MySqlDockerServer* class.
 
-##### Header 5
+You can access the example project code in my repository [here](https://github.com/codingcronus/example-integration-tests-with-docker).
 
-1.  This is an ordered list following a header.
-2.  This is an ordered list following a header.
-3.  This is an ordered list following a header.
-
-###### Header 6
-
-| head1        | head two          | three |
-|:-------------|:------------------|:------|
-| ok           | good swedish fish | nice  |
-| out of stock | good and plenty   | nice  |
-| ok           | good `oreos`      | hmm   |
-| ok           | good `zoute` drop | yumm  |
-
-### There's a horizontal rule below this.
-
-* * *
-
-### Here is an unordered list:
-
-*   Item foo
-*   Item bar
-*   Item baz
-*   Item zip
-
-### And an ordered list:
-
-1.  Item one
-1.  Item two
-1.  Item three
-1.  Item four
-
-### And a nested list:
-
-- level 1 item
-  - level 2 item
-  - level 2 item
-    - level 3 item
-    - level 3 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-
-### Small image
-
-![Octocat](https://assets-cdn.github.com/images/icons/emoji/octocat.png)
-
-### Large image
-
-![Branching](https://guides.github.com/activities/hello-world/branching.png)
-
-
-### Definition lists can be used with HTML syntax.
-
-<dl>
-<dt>Name</dt>
-<dd>Godzilla</dd>
-<dt>Born</dt>
-<dd>1952</dd>
-<dt>Birthplace</dt>
-<dd>Japan</dd>
-<dt>Color</dt>
-<dd>Green</dd>
-</dl>
-
-```
-Long, single-line code blocks should not wrap. They should horizontally scroll if they are too long. This line should be long enough to demonstrate this.
-```
-
-```
-The final element.
-```
+You can contact me by writing a mail to [codingcronus@gmail.com](mailto:codingcronus@gmail.com)
