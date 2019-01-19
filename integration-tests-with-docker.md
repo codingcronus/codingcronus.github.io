@@ -338,6 +338,6 @@ You can access the example project code in my repository [here](https://github.c
 
 ### About me
 
-Cloud architect with many years of experience. Key areas includes: Scalable Cloud Architecture, Domain Driven Design, AI, Event Sourcing, CQRS, Automated Testing, Technical Due Diligence and many more.
+Cloud architect with many years of experience. Key areas include: Scalable Cloud Architecture, Domain Driven Design, AI, Event Sourcing, CQRS, Automated Testing, Technical Due Diligence and many more.
 
 I am based in Copenhagen, Denmark. You can contact me by writing a mail to [codingcronus@gmail.com](mailto:codingcronus@gmail.com)
