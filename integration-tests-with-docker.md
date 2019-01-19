@@ -55,7 +55,7 @@ While we could make a solution with any choice of database vendor, I will choose
 In order for our test to be fast, we should make sure that the Docker Container can start in the least amount of time possible.
 The official MySQL Docker Image contains several features that we usually do not care about while performing integration testing and so we should look for a stripped down version. Luckily and thanks to [Zanox](https://hub.docker.com/r/zanox) this can be found right [here](https://hub.docker.com/r/zanox/mysql).
 
-We modify the Dockerfile slightly in order to bake our test data into the image:
+We modify the Dockerfile slightly in order to bake our test data into the image.
 
 **Dockerfile**
 
@@ -69,7 +69,7 @@ RUN start-mysql && \
     mysql < /schema.sql && \
     stop-mysql
 ```
-Where the schema.sql is responsible for creating the database schema and populating it with test data:
+Where the schema.sql is responsible for creating the database schema and populating it with test data.
 
 **schema.sql**
 
@@ -95,63 +95,229 @@ INSERT INTO Books (Id, Title, Author, Isbn, NumPages)
 VALUES ('95aedbbc-e385-4762-b513-5b579cd0ac64', 'Breakfast of Champions', 'Kurt Vonnegut', '978-1501263378', 378);
 ```
 
-# Header 1
+We build and tag the Docker Image using the standard Docker build command:
 
-This is a normal paragraph following a header. GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere.
+```docker
+docker build -t codingcronus/integrationtest-mysql .
+```
 
-## Header 2
+Now that our Docker Image has been built, we can continue our work in Visual Studio. For this example I have implemented the dependencies in .NET Core, but other versions is supported as well.
 
-> This is a blockquote following a header.
->
-> When something is important enough, you do it even if the odds are not in your favor.
+#### The Test Fixture
 
-#### MySQL Docker Server service
+We start out by fleshing out the Test Fixture. You could end up with something like the one below.
+
+**BookIntegrationSpecs.cs**
 
 ```csharp
-using MySql.Data.MySqlClient;
-using System;
-using System.Threading.Tasks;
-
-namespace TddExample.Test.Infrastructure
+[TestClass]
+public class BookIntegrationSpecs
 {
-    public class MySqlDockerServer : DockerServer
+    private static readonly string _connectionString = "Server=127.0.0.1;Port=3306;Database=NextTestDb;Uid=root;Pwd=;";
+
+    // Restore database per Test Fixture
+    // Use [TestInitialize] to restore once per Test Method instead.
+    [ClassInitialize]
+    public static void InitializeFixture(TestContext context)
     {
-        public string ConnectionString { get; }
+        var server = new MySqlDockerServer(_connectionString);
+        
+        server.Connect().Wait(); //Async method, so Wait for completion
+    }
 
-        public MySqlDockerServer(string connectionString) : base (
-            "AlineaNextIntegrationTestDb", 
-            "alinea/next-integrationtest-mysql", 
-            "latest"
-            )
+    [TestMethod]
+    public void Can_load_book_from_mysql_database()
+    {
+        // ARRANGE
+        var bookId = "409b0915-b494-4993-9211-a533fb78f70d"; // From https://www.guidgenerator.com/online-guid-generator.aspx
+        var sut = new BookRepositoryMySql(_connectionString);
+
+        // ACT
+        var result = sut.GetById(bookId);
+
+        // ASSERT
+        Assert.IsNotNull(result, "Book is null");
+    }
+
+    [TestMethod]
+    public void Can_load_book_with_correct_title()
+    {
+        // ARRANGE
+        var bookId = "409b0915-b494-4993-9211-a533fb78f70d";
+        var sut = new BookRepositoryMySql(_connectionString);
+
+        // ACT
+        var result = sut.GetById(bookId);
+
+        // ASSERT
+        Assert.AreEqual("Clean Code", result.Title);
+    }
+
+    [TestMethod]
+    public void Can_save_book()
+    {
+        // ARRANGE
+        var bookId = "2c85f1a7-fd98-4ac2-986d-27d20efe062e";
+        var book = new Book(bookId, "Harry Potter");
+
+        var sut = new BookRepositoryMySql(_connectionString);
+
+        // ACT
+        var result = sut.Save(book);
+
+        // ASSERT
+        Assert.IsTrue(result);
+    }
+}
+```
+
+The test should be pretty self explanatory, but you might have noticed that I am using two other principles of good testing:
+
+*   The Arrange, Act and Assert (AAA) layout of each test method
+*   Only one assert per test rather than multiple assertions
+
+Maybe you have also noticed that we are instantiating the MySqlDockerServer class with the same connection string as for the MySQL BookRepository (the SUT = **S**ystem **U**nder **T**est). The MySqlDockerServer has not yet been defined, so we do that next.
+
+**MySqlDockerServer.cs**
+
+```csharp
+public class MySqlDockerServer : DockerServer
+{
+    public string ConnectionString { get; }
+
+    public MySqlDockerServer(string connectionString) : base (
+        "CodingCronusIntegrationTestDb", 
+        "codingcronus/integrationtest-mysql", 
+        "latest"
+        )
+    {
+        ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+    }
+
+    protected override async Task<bool> IsReady()
+    {
+        try
         {
-            ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+            using (var conn = new MySqlConnection(ConnectionString))
+            {
+                await conn.OpenAsync();
+
+                return true;
+            }
         }
-
-        protected override async Task<bool> IsReady()
+        catch (Exception)
         {
-            try
-            {
-                using (var conn = new MySqlConnection(ConnectionString))
-                {
-                    await conn.OpenAsync();
-
-                    return true;
-                }
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return false;
         }
     }
 }
 ```
 
-```ruby
-# Ruby code with syntax highlighting
-GitHubPages::Dependencies.gems.each do |gem, version|
-  s.add_dependency(gem, "= #{version}")
-end
+The MySqlDockerServer selects a name for the Container (*CodingCronusIntegrationTestDb*), the image tag from the prevous step and the version (*latest*).
+The constructor also takes the connection string as input and uses it in the overridden *IsReady* method to determine when the database is available.
+
+As you can see the class inherits from *DockerServer*. This is a slightly modified version of [Jeremy D. Miller](https://jeremydmiller.com)s implementation. It uses the [Docker.DotNet](https://www.nuget.org/packages/Docker.DotNet) nuget package.
+
+**DockerServer.cs**
+
+```csharp
+public abstract class DockerServer
+{
+    private DockerClient client;
+
+    public string ContainerName { get; }
+    public string ImageName { get; }
+    public string ImageTag { get; }
+    public bool KeepAlive { get; }
+
+    public DockerServer(string containerName, string imageName, string imageTag, bool keepAlive=false)
+    {
+        ContainerName = containerName ?? throw new ArgumentNullException(nameof(containerName));
+        ImageName = imageName ?? throw new ArgumentNullException(nameof(imageName));
+        ImageTag = imageTag ?? throw new ArgumentNullException(nameof(imageTag));
+        KeepAlive = keepAlive;
+        client = new DockerClientConfiguration(new Uri("npipe://./pipe/docker_engine")).CreateClient();
+    }
+
+    protected abstract Task<bool> IsReady();
+
+    public async Task Connect()
+    {
+        var container = await DownloadImageToContainer();
+        if (container == null) throw new NullReferenceException("Could not download Docker image to container");
+
+        await StartContainer(container);
+
+        var i = 0;
+        while (!await IsReady())
+        {
+            i++;
+
+            if (i > 20)
+                throw new TimeoutException($"Container {ContainerName} does not seem to be responding in a timely manner");
+
+            await Task.Delay(1000);
+        }
+    }
+
+    private async Task<ContainerListResponse> DownloadImageToContainer()
+    {
+        var containers = await client.Containers.ListContainersAsync(new ContainersListParameters() { All = true });
+
+        var container = containers.FirstOrDefault(c => c.Names.Contains("/" + ContainerName));
+        if (container == null)
+        {
+            // Create the container
+            var config = new Config()
+            {
+                Hostname = "localhost"
+            };
+
+            // Configure the ports to expose
+            var hostConfig = new HostConfig()
+            {
+                PortBindings = new Dictionary<string, IList<PortBinding>>
+                {
+                    { "80/tcp", new List<PortBinding> { new PortBinding { HostIP = "127.0.0.1", HostPort = "8080" } } },
+                    { "3306/tcp", new List<PortBinding> { new PortBinding { HostIP = "0.0.0.0", HostPort = "3306" } } },
+                }
+            };
+
+            // Create the container
+            var response = await client.Containers.CreateContainerAsync(new CreateContainerParameters(config)
+            {
+                Image = ImageName + ":" + ImageTag,
+                Name = ContainerName,
+                Tty = false,
+                HostConfig = hostConfig,
+            });
+
+            // Get the container object
+            containers = await client.Containers.ListContainersAsync(new ContainersListParameters() { All = true });
+            container = containers.First(c => c.ID == response.ID);
+        }
+
+        return container;
+    }
+
+    private async Task StartContainer(ContainerListResponse container)
+    {
+        // Stop and remove existing container. Get a new container.
+        if (container.State == "running" && !KeepAlive)
+        {
+            await client.Containers.StopContainerAsync(container.ID, new ContainerStopParameters());
+            await client.Containers.RemoveContainerAsync(container.ID, new ContainerRemoveParameters());
+            container = await DownloadImageToContainer();
+        }
+
+        // Start the container is needed
+        if (container.State != "running")
+        {
+            var started = await client.Containers.StartContainerAsync(container.ID, new ContainerStartParameters());
+            if (!started) throw new Exception("Cannot start Docker container");
+        }
+    }
+}
 ```
 
 #### Header 4
