@@ -4,17 +4,26 @@ layout: default
 
 # Integration Testing using Docker Containers
 
-Integration and E2E tests can often be brittle when testing against external services and infrastructure such as e.g. a database.
-
+Integration- and E2E-tests can often be brittle when testing against external services and infrastructure such as e.g. a database.
 As a consultant giving advice to a multitude of different companies and organisations, I've seen the following scenario several times.
 
 ### Common Integration Test scenario
+
+In this common integration test scenario, multiple developers (or Continous Integration pipelines) are executing commands and queries against a shared database.
+This is fine up until the point were a command alters data (aka State) that another test relies on. The database is no longer synchronized with requirements and assertions of the given integration test.
+
 ![Before](https://codingcronus.github.io/posts/integration-tests-with-containers/before.png)
 
+In order to synchronzize the database, the data has to be truncated and re-inserted. This of course can be automated in the Test Fixture Tear Down, CI-process and whatnot. How ever since the database is shared, the script might be executed while others are querying the resource and hence the tests are very brittle.
+
 ### A better solution using Containers
-A  better solution is to use Containers. We should go for a scenario like the one below.
+A  better solution is to have a dedicated database per developer. This requires quite some setup and is prone for subtle differences in each environment. Re-synchronizing the data in the Test Fixture Tear Down method would be trivial, but might also prove to be very time consuming depending on the amount of data.
+
+An even better solution would be to use Containers. We could go for a scenario like the one below.
 
 ![After](https://codingcronus.github.io/posts/integration-tests-with-containers/after.png)
+
+Each container would use the same Docker Image with a dedicated database (MySQL, SQL Server, Oracle DB etc.) and the required integration test data baked into the image. This would allow us to respawn the database with its initial state in a matter of a few seconds.
 
 # Header 1
 
