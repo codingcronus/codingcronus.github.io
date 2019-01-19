@@ -3,6 +3,8 @@ layout: default
 ---
 
 # Integration Testing using Docker Containers
+TL;DR: The project source code can be found [here](https://github.com/codingcronus/example-integration-tests-with-docker)
+
 Integration- and E2E-tests can often be brittle when testing against external services and infrastructure such as e.g. a database.
 As a consultant giving advice to a multitude of different companies and organisations, I've seen the following scenario several times.
 
@@ -113,7 +115,7 @@ We start out by fleshing out the Test Fixture. You could end up with something l
 [TestClass]
 public class BookIntegrationSpecs
 {
-    private static readonly string _connectionString = "Server=127.0.0.1;Port=3306;Database=NextTestDb;Uid=root;Pwd=;";
+    private static readonly string _connectionString = "Server=127.0.0.1;Port=3306;Database=TestDb;Uid=root;Pwd=;";
 
     // Restore database per Test Fixture
     // Use [TestInitialize] to restore once per Test Method instead.
@@ -177,6 +179,8 @@ The test should be pretty self explanatory, but you might have noticed that I am
 *   Only one assert per test rather than multiple assertions
 
 Maybe you have also noticed that we are instantiating the MySqlDockerServer class with the same connection string as for the MySQL BookRepository (the SUT = **S**ystem **U**nder **T**est). The MySqlDockerServer has not yet been defined, so we do that next.
+
+#### The Docker Service
 
 **MySqlDockerServer.cs**
 
@@ -319,6 +323,8 @@ public abstract class DockerServer
     }
 }
 ```
+
+
 
 #### Header 4
 
