@@ -19,7 +19,7 @@ In order to synchronzize the database, the data has to be truncated and re-inser
 ### A better solution using Containers
 **Dedicated database**
 
-A  better solution is to have a dedicated database per developer. This requires quite some setup and is prone for subtle differences in each environment. Re-synchronizing the data in the Test Fixture Tear Down method would be trivial, but might also prove to be very time consuming depending on the amount of data.
+A  better solution is to have a dedicated database per developer. This requires quite some setup and is prone for subtle differences in each environment. Re-synchronizing the data in the Test Fixture Tear Down method would be trivial, but might also prove to be very time consuming to execute depending on the amount of data.
 
 **Containerized database**
 
@@ -30,14 +30,14 @@ An even better solution would be to use Containers. We could go for a scenario l
 Each container would use the same Docker Image with a dedicated database (MySQL, SQL Server, Oracle DB etc.) and the required integration test data baked into the image. This would allow us to respawn the database with its initial state in a matter of a few seconds.
 
 ### The Solution
-The [FIRST](https://github.com/ghsukumar/SFDC_Best_Practices/wiki/F.I.R.S.T-Principles-of-Unit-Testing) acronym in automated testing consists of:
+The [FIRST](https://github.com/ghsukumar/SFDC_Best_Practices/wiki/F.I.R.S.T-Principles-of-Unit-Testing) principle in automated testing is an acronym for:
 *   **F**ast
 *   **I**ndependent
 *   **R**epeatable
 *   **S**elf-validating
 *   **T**imely
 
-You can follow this [link](https://github.com/ghsukumar/SFDC_Best_Practices/wiki/F.I.R.S.T-Principles-of-Unit-Testing) to read more about the details of FIRST. In essence integration tests often have a hard time being compliant with the **F** and the **R**. In other words, integration tests are usually slow and brittle, which in turn makes them non-repeatable.
+You can follow this [link](https://github.com/ghsukumar/SFDC_Best_Practices/wiki/F.I.R.S.T-Principles-of-Unit-Testing) to read more about the details of FIRST principle. In essence integration tests often have a hard time being compliant with the **F**ast and the **R**epeatable rules of the FIRST principle. In other words: Integration tests are usually slow and brittle, which in turn makes them non-repeatable.
 
 Hence our solution should strive for multiple success criteria.
 #### Our success criteria:
@@ -48,6 +48,12 @@ Hence our solution should strive for multiple success criteria.
 *   Our Test Fixture should easily be able to integrate the Docker container usage
 *   Our Test Fixture should be able to use multiple and different Docker containers
 
+#### The Docker Image
+
+While we could make a solution with any choice of database vendor, I will choose MySQL for this example. Switching with e.g. SQL Server is very easy and just a matter of choosing another Docker Image for the container. Microsoft has an official release for the SQL Server Docker Image [here](https://hub.docker.com/_/microsoft-mssql-server).
+
+In order for our test to be fast, we should make sure that the Docker Container can start in the least amount of time possible.
+The official MySQL Docker Image contains several features that we usually do not care about while performing integration testing and so we should look for a stripped down version. Luckily this can be found right [here](https://hub.docker.com/r/zanox/mysql/
 # Header 1
 
 This is a normal paragraph following a header. GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere.
