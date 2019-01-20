@@ -6,7 +6,7 @@ Welcome to my new blog. I will use this to write about subjects such as Event So
 
 # Latest Posts
 
-This blog is brand new, so not many latests posts yet.
+This blog is brand new, so not many latest posts yet.
 
 ### Integration Testing using Docker Containers
 
