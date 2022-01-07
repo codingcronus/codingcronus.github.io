@@ -3,7 +3,7 @@ layout: default
 ---
 
 # Integration Testing using Docker Containers
-<div style="text-align: right;font-weight:600;">January 19, 2019</div>
+<div style="text-align: right;font-weight:600;">January 7, 2022</div>
 TL;DR: The project source code can be found [here](https://github.com/codingcronus/example-integration-tests-with-docker)
 
 Integration- and E2E-tests can often be brittle when testing against external services and infrastructure such as e.g. a database.
@@ -338,6 +338,6 @@ You can access the example project code in my repository [here](https://github.c
 
 ### About me
 
-Cloud architect with many years of experience. Key areas include: Scalable Cloud Architecture, Domain Driven Design, AI, Event Sourcing, CQRS, Automated Testing, Technical Due Diligence and many more.
+Cloud architect with many years of experience. Key areas include: Low-code Solutions, Scalable Cloud Architecture, Domain Driven Design, AI, Event Sourcing, CQRS, Automated Testing, Technical Due Diligence and many more.
 
-I am based in Copenhagen, Denmark. You can contact me by writing a mail to [codingcronus@gmail.com](mailto:codingcronus@gmail.com)
+I am based in Copenhagen, Denmark. You can contact me by writing a mail to [mikkel@hempel.vc](mailto:mikkel@hempelvc)
