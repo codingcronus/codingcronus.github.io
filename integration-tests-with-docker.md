@@ -17,7 +17,7 @@ This is fine up until the point were a command alters data (aka State) that anot
 
 ![Before](https://codingcronus.github.io/posts/integration-tests-with-containers/before.png)
 
-In order to synchronzize the database, the data has to be truncated and re-inserted. This of course can be automated in the Test Fixture Tear Down, CI-process and whatnot. How ever since the database is shared, the script might be executed while others are querying the resource and hence the tests are very brittle.
+In order to synchronize the database, the data has to be truncated and re-inserted. This of course can be automated in the Test Fixture Tear Down, CI-process and whatnot. How ever since the database is shared, the script might be executed while others are querying the resource and hence the tests are very brittle.
 
 ### A better solution using Containers
 **Dedicated database**
