@@ -17,4 +17,4 @@ Read about my take on how to design more stable integration tests in my post: [I
 
 Cloud architect with many years of experience. Key areas include: Scalable Cloud Architecture, Domain Driven Design, AI, Event Sourcing, CQRS, Automated Testing, Technical Due Diligence and many more.
 
-I am based in Copenhagen, Denmark. You can contact me by writing a mail to [codingcronus@gmail.com](mailto:codingcronus@gmail.com)
+I am based in Copenhagen, Denmark. You can contact me by writing a mail to [mikkel@hempel.vc](mailto:mikkel@hempel.vc)
